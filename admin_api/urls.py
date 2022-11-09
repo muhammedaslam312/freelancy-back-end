@@ -12,4 +12,6 @@ urlpatterns = [
        
         path('verifyteacher/<int:id>/',views.VerifyTeacher.as_view(),name='verifyteacher'),
         path('getteachers/',views.GetTeachersView.as_view(),name='getusers'),
+        path('admin/course_category_list/',views.CourseCategoryDetail.as_view(),name='getcategory'),
+        
 ]

@@ -1,11 +1,7 @@
 
-from distutils.command.upload import upload
-from email.policy import default
-from operator import mod
-from pyexpat import model
-from tkinter.tix import Balloon, Tree
-from turtle import title
 from django.db import models
+from django.core import serializers
+
 
 # Create your models here.
 
@@ -25,7 +21,6 @@ class Teacher(models.Model):
     def __str__(self):
         return self.email
 
-
 class TeacherToken(models.Model):
     teacher_id = models.IntegerField()
     token = models.CharField(max_length=255)
@@ -41,6 +36,8 @@ class CourseCategory(models.Model):
 
     class Meta:
         verbose_name_plural = '2. Course Category'
+    def __str__(self):
+        return self.title
 
 
 #course model
@@ -51,15 +48,20 @@ class Course(models.Model):
     title = models.CharField(max_length=150)
     discription = models.TextField()    
     used_techs = models.CharField(max_length=50,blank=True)
+    price=models.IntegerField(default=0)
     
     def __str__(self):
         return self.title
 
     class Meta:
         verbose_name_plural = '3. Course'
+    
+    def related_courses(self):
+        related_courses=Course.objects.filter(used_techs__icontains=self.used_techs)
+        return serializers.serialize('json',related_courses)
 
 class Chapter(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE,related_name='course_chapters')
     title =models.CharField(max_length=150)
     discription = models.TextField()
     video = models.FileField(upload_to='videos/chapter_videos/',blank=True)

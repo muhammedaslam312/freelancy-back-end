@@ -11,13 +11,14 @@ from rest_framework import status
 
 import datetime
 
-from .serializers import ChapterSerializer, CorseCategorySerializer, CourseSerializer, TeacherSerializer
+from .serializers import ChapterSerializer, CorseCategorySerializer, CourseSerializer, TeacherSerializer,EntrollmentSerializer,TeacherDashboardSerializer
+
 from .models import Chapter, Teacher, TeacherToken,CourseCategory,Course
 from rest_framework import generics,permissions
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-
+from payment.models import StudentEntrollment
 
 from django.contrib.auth.hashers import check_password
 
@@ -162,3 +163,30 @@ class DeleteChapter(APIView):
         return Response(response,status=status.HTTP_204_NO_CONTENT) 
     
 
+class GetEntrolledStudents(APIView):
+    authentication_classes=[JWTTeacherAuthentication]
+
+    def get(self,request,id):
+        # course=Course.objects.filter(teacher=id)
+        # serializer_list=[]
+        # for i in course:
+        #     entrollment =StudentEntrollment.objects.filter(course__teacher=i.id)
+        #     if entrollment:
+        #         serializer = EntrollmentSerializer(entrollment,many=True)
+        #         serializer_list.append(serializer.data)
+        entrollment =StudentEntrollment.objects.filter(course__teacher=id)
+        serializer = EntrollmentSerializer(entrollment,many=True)
+        return Response(serializer.data)
+
+class GetTeacherDashboard(APIView):
+     authentication_classes=[JWTTeacherAuthentication]
+     def get(self,request,id):
+        total_courses=Course.objects.filter(teacher=id).count()
+        total_chapters=Chapter.objects.filter(course__teacher=id).count()
+        total_students=StudentEntrollment.objects.filter(course__teacher=id).count()
+        data = {
+            'total_courses':total_courses,
+            'total_chapters':total_chapters,
+            'total_students':total_students
+        }
+        return Response(data)

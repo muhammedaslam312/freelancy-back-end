@@ -1,8 +1,11 @@
 
 
 
+from turtle import mode
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser
+
+from teacher_app.models import Course
 # Create your models here.
 
 # 
@@ -17,7 +20,7 @@ class MyAccountManager(BaseUserManager):
             email = self.normalize_email(email),
 
         )    
-        user.is_active = True
+        user.is_active = False
         user.is_staff = False
         user.is_superuser = False
         user.is_verified = False
@@ -53,7 +56,7 @@ class Account(AbstractBaseUser):
     joined_date = models.DateTimeField(auto_now_add=True)
     last_login      =models.DateTimeField(auto_now=True)
     is_staff        =models.BooleanField(default=False)
-    is_active       =models.BooleanField(default=True)
+    is_active       =models.BooleanField(default=False)
     is_verified     =models.BooleanField(default=False)
     is_superuser   =models.BooleanField(default=False)
 
@@ -68,7 +71,31 @@ class Account(AbstractBaseUser):
         return self.is_superuser
     def has_module_perms(self,add_label):
         return True
+
+class FavoriteCourse(models.Model):
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    student =models.ForeignKey(Account,on_delete=models.CASCADE)
+    status=models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural="7. student favorite Course"
     
+    def __str__(self):
+        return f"{self.course}.{self.student}"
+    
+    
+
+class CourseRating(models.Model):
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
+    student=models.ForeignKey(Account,on_delete=models.CASCADE)
+    rating=models.PositiveBigIntegerField(default=0)
+    reviews = models.TextField(null=True)
+    review_time=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.course}.{self.student}.{self.rating}"
+
+
 
 
 

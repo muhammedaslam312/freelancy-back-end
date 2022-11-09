@@ -4,7 +4,7 @@ from . import models
 # Register your models here.
 class AccountAdmin(admin.ModelAdmin):
     model = models.Account
-    list_display = ('username', 'email', 'mobile','interests','is_staff','is_verified','is_active','last_login','joined_date') 
+    list_display = ('id','username', 'email', 'mobile','interests','is_staff','is_verified','is_active','last_login','joined_date') 
     
     readonly_fields = ('last_login','joined_date','password')
     ordering = ('joined_date', )
@@ -15,3 +15,5 @@ class AccountAdmin(admin.ModelAdmin):
 # Register your models here.
 
 admin.site.register(models.Account,AccountAdmin)
+admin.site.register(models.CourseRating)
+admin.site.register(models.FavoriteCourse)

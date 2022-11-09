@@ -17,7 +17,9 @@ urlpatterns = [
 
     path('get_chapters/<int:id>/',views.GetAllChapters.as_view()),
     path('create_chapter/',views.CreateChapter.as_view()),
-    path('delete_chapter/<int:pk>/',views.DeleteChapter.as_view())
+    path('delete_chapter/<int:pk>/',views.DeleteChapter.as_view()),
+    path('entrolled_student/<int:id>/',views.GetEntrolledStudents.as_view()),
+    path('teacher_dashboard/<int:id>/',views.GetTeacherDashboard.as_view()),
 
 
 

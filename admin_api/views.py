@@ -1,20 +1,25 @@
 from functools import partial
+import imp
 from msilib.schema import Class
 from re import U
 from django.shortcuts import render
 from rest_framework.views import APIView
 
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
-from main import serializers
+
 
 from main.models import Account
 from main.serializers import AccountSerializer
 from .serializer import UpdateTeacherSerializer, UpdateUserSerializer
 
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from teacher_app.models import Teacher
-from teacher_app.serializers import TeacherSerializer
+
+from teacher_app.models import CourseCategory, Teacher
+from teacher_app.serializers import CorseCategorySerializer, TeacherSerializer
+from rest_framework import generics
+
+from django.core.mail import send_mail
+
 
 
 
@@ -26,7 +31,7 @@ class GetUsersView(APIView):
 
 
     def get(self,request):
-        Accounts = Account.objects.all().exclude(id=1)
+        Accounts = Account.objects.all().exclude(is_superuser=True)
         serializer = AccountSerializer(Accounts,many=True)
         return Response (serializer.data)
 
@@ -78,6 +83,8 @@ class GetTeachersView(APIView):
         return Response (serializer.data)
 
 
+
+
 class VerifyTeacher(APIView):
     # permission_classes=[IsAdminUser]
     
@@ -86,6 +93,15 @@ class VerifyTeacher(APIView):
         print(details.id)
         if details.is_active == False:
             details.is_active = True
+
+            mail=details.email
+            send_mail('Hello  ',
+            'Congratulations, your Vender application is approved.',
+            'icart312@gmail.com'
+            ,[mail]   
+            ,fail_silently=False)
+            print("email sent")
+
         else:
             details.is_active= False
         serializer = UpdateTeacherSerializer(details,data=request.data,partial = True)
@@ -97,6 +113,14 @@ class VerifyTeacher(APIView):
             print('teacher action failed')
             print(serializer.errors)
             return Response(serializer.errors)    
+
+class CourseCategoryDetail(generics.ListCreateAPIView):
+    
+    # permission_classes = [IsAuthenticated]
+    queryset = CourseCategory.objects.all()
+    serializer_class = CorseCategorySerializer
+    
+  
 
 
 

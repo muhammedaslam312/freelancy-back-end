@@ -1,9 +1,13 @@
 from dataclasses import fields
 import email
 import imp
+from pyexpat import model
 from rest_framework import serializers
 from django.contrib.auth.models import User
+
+from teacher_app.models import Course
 from . import models
+from payment.models import StudentEntrollment
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -26,9 +30,50 @@ class AccountSerializer(serializers.ModelSerializer):
         reg = models.Account(
             email=self.validated_data['email'],
             username = self.validated_data['username'],
-            mobile = self.validated_data['mobile']
+            mobile = self.validated_data['mobile'],
+            interests = self.validated_data['interests'],
+            
+
         )           
         password = self.validated_data['password']
         reg.set_password(password)
         reg.save()
         return reg
+
+class VerifyOtpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Account
+        fields = ['is_active']
+
+class SingleCourseSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model= Course
+        fields=['id','category','teacher','title','discription','feature_image','used_techs','course_chapters','related_courses']
+        depth = 1
+
+class RecomentedCourseSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model= Course
+        fields=['id','category','teacher','title','discription','feature_image','used_techs','course_chapters']
+        
+class CourseRatingSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model =models.CourseRating
+        fields='__all__'
+
+class EntrolledCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentEntrollment
+        fields='__all__'
+        depth = 2
+
+class FavoriteCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FavoriteCourse
+        fields='__all__'
+        
+
+    

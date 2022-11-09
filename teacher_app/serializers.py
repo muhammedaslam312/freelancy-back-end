@@ -3,6 +3,7 @@ from pyexpat import model
 from rest_framework import serializers
 from .models import Chapter, CourseCategory, Teacher,Course
 from django.contrib.auth.hashers import make_password
+from payment.models import StudentEntrollment
 
 class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
@@ -47,3 +48,14 @@ class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
         fields=['id','course','title','discription','video','remark']
+
+class EntrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentEntrollment
+        fields='__all__'
+        depth = 1
+
+class TeacherDashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        fields=['total_courses','total_chapters','total_students']

@@ -11,7 +11,11 @@ class CourseAdmin(admin.ModelAdmin):
     model = models.Course
     list_display = ('id', 'title') 
 
-admin.site.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    model = models.Teacher
+    list_display = ('id', 'email','qualification') 
+
+admin.site.register(Teacher,TeacherAdmin)
 admin.site.register(CourseCategory)
 admin.site.register(Course,CourseAdmin)
 admin.site.register(Chapter)

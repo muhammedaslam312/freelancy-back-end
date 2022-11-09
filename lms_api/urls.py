@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/',include('main.urls')),
     path('api/',include('teacher_app.urls')),
     path('api/',include('admin_api.urls')),
-    path('api-auth/', include('rest_framework.urls'))
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/', include("payment.urls")),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
