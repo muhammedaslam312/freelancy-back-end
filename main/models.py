@@ -5,7 +5,7 @@ from turtle import mode
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser
 
-from teacher_app.models import Course
+from teacher_app.models import Course,Teacher
 # Create your models here.
 
 # 
@@ -46,7 +46,7 @@ class Account(AbstractBaseUser):
     username = models.CharField(max_length=50)
     email = models.EmailField(max_length=100,unique=True)
     mobile = models.CharField(max_length=10,unique=True,null=True)
-    password = models.CharField(max_length=20,blank=False,null=False)
+    password = models.CharField(max_length=200,blank=False,null=False)
     profile_dp = models.ImageField(upload_to='photos/users_dp/',blank=True)
     bio = models.TextField(blank=True,null=True)
     interests = models.TextField(max_length=100,null=True,blank=True)
@@ -86,14 +86,27 @@ class FavoriteCourse(models.Model):
     
 
 class CourseRating(models.Model):
-    course = models.ForeignKey(Course,on_delete=models.CASCADE)
-    student=models.ForeignKey(Account,on_delete=models.CASCADE)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
+    student=models.ForeignKey(Account,on_delete=models.CASCADE,null=True)
     rating=models.PositiveBigIntegerField(default=0)
     reviews = models.TextField(null=True)
     review_time=models.DateTimeField(auto_now_add=True)
+    demo = models.CharField(max_length=200,blank=True)
 
     def __str__(self):
         return f"{self.course}.{self.student}.{self.rating}"
+
+class StudentAssignment(models.Model):
+    teacher = models.ForeignKey(Teacher,on_delete=models.CASCADE)
+    student=models.ForeignKey(Account,on_delete=models.CASCADE,null=True)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
+    title=models.CharField(max_length=200,blank=True)
+    file=models.FileField(upload_to='assigment/',blank=True)
+    detail = models.TextField(null=True)
+    add_time=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title}.{self.student}"
 
 
 

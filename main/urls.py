@@ -15,14 +15,20 @@ urlpatterns = [
     path('get_allcourses/latest/',views.GetAllCourses.as_view()),
     path('recomented_courses/<int:id>/',views.RecomentedCourses.as_view()),
     path('course_details/<int:id>/',views.CourseDetails.as_view()),
-    path('user/get_chapters/<int:student_id>/<int:course_id>/',views.GetAllChapters.as_view()),
-    path('post_rating/',views.PostRating.as_view()),
+    path('user/get_chapters/<int:student_id>/<int:course_id>',views.GetAllChapters.as_view()),
+    
+    path('all_course/',views.PostRating.as_view()),
 
     #dashboard
     path('get_entrolled/<int:id>/',views.GetUserEntrolledCourses.as_view()),
     path('add_favorite/',views.StudentFavoriteCourse.as_view()),
+    path('get_favorite/<int:id>/',views.StudentFavoriteCourse.as_view()),
     path('remove_favorite/<int:student_id>/<int:course_id>',views.remove_favorite_course.as_view()),
-    #payment
+    
+    #assignment
+    path('add_assignment/',views.AssignmentList.as_view()),
+    path('assignment/<int:course_id>/<int:user_id>/',views.AssignmentList.as_view()),
+    path('user/assignment/<int:course_id>/<int:user_id>/',views.UserAssignmentList.as_view()),
    
     
     ]

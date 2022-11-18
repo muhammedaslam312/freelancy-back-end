@@ -17,3 +17,4 @@ class AccountAdmin(admin.ModelAdmin):
 admin.site.register(models.Account,AccountAdmin)
 admin.site.register(models.CourseRating)
 admin.site.register(models.FavoriteCourse)
+admin.site.register(models.StudentAssignment)

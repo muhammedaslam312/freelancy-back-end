@@ -60,6 +60,8 @@ class Course(models.Model):
         related_courses=Course.objects.filter(used_techs__icontains=self.used_techs)
         return serializers.serialize('json',related_courses)
 
+    
+
 class Chapter(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE,related_name='course_chapters')
     title =models.CharField(max_length=150)
@@ -71,3 +73,6 @@ class Chapter(models.Model):
         verbose_name_plural = '4. Chapters'
     def __str__(self):
         return self.title
+
+    
+

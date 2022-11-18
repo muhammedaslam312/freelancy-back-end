@@ -49,14 +49,14 @@ class SingleCourseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= Course
-        fields=['id','category','teacher','title','discription','feature_image','used_techs','course_chapters','related_courses']
+        fields=['id','category','teacher','title','discription','feature_image','used_techs','course_chapters','price','related_courses']
         depth = 1
 
 class RecomentedCourseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model= Course
-        fields=['id','category','teacher','title','discription','feature_image','used_techs','course_chapters']
+        fields=['id','category','teacher','title','discription','feature_image','used_techs','price','course_chapters']
         
 class CourseRatingSerializer(serializers.ModelSerializer):
 
@@ -67,13 +67,25 @@ class CourseRatingSerializer(serializers.ModelSerializer):
 class EntrolledCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentEntrollment
-        fields='__all__'
-        depth = 2
+        fields=['course','student','order_amount','get_chapters']
+        depth = 1
 
 class FavoriteCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.FavoriteCourse
         fields='__all__'
+        depth = 1
+        
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.StudentAssignment
+        fields = '__all__'
+        depth = 1
+
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = '__all__'
         
 
     

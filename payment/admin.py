@@ -7,7 +7,7 @@ from .models import StudentEntrollment
 
 class StudentEntrollmentAdmin(admin.ModelAdmin):
     model = StudentEntrollment
-    list_display = ('student','course','isPaid','entrolled_time') 
+    list_display = ('student','course','isPaid','order_date') 
 
 admin.site.register(StudentEntrollment,StudentEntrollmentAdmin)
 

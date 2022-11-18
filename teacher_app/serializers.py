@@ -59,3 +59,4 @@ class TeacherDashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields=['total_courses','total_chapters','total_students']
+

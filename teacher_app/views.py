@@ -190,3 +190,4 @@ class GetTeacherDashboard(APIView):
             'total_students':total_students
         }
         return Response(data)
+

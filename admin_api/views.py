@@ -96,7 +96,7 @@ class VerifyTeacher(APIView):
 
             mail=details.email
             send_mail('Hello  ',
-            'Congratulations, your Vender application is approved.',
+            'Congratulations, your Teacher application is approved.',
             'icart312@gmail.com'
             ,[mail]   
             ,fail_silently=False)

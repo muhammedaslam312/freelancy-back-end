@@ -7,10 +7,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from teacher_app.models import Course,Chapter
 from teacher_app.serializers import ChapterSerializer
 
-from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer
+from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer,AssignmentSerializer,CourseSerializer
 
 
-from .models import Account,FavoriteCourse
+from .models import Account,FavoriteCourse,StudentAssignment
 from rest_framework.response import Response
 from django.http import Http404
 from rest_framework import status
@@ -18,6 +18,7 @@ from .verify import send,check
 from rest_framework import generics,permissions
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from payment.models import StudentEntrollment
+from teacher_app.authentication import JWTTeacherAuthentication
 
 from django.db.models import Q
 # Create your views here.
@@ -29,19 +30,28 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         print("******")
         print(user)
-        token = super().get_token(user)
+        if user:
+            token = super().get_token(user)
 
-        # Add custom claims
+            # Add custom claims
+            
+            token['username'] = user.username
+            token['email'] = user.email
         
-        token['username'] = user.username
-        token['email'] = user.email
-       
-        token['is_superuser'] = user.is_superuser
-        token['mobile'] = user.mobile
-        # ...
-        print('/////////')
-        print(token)
-        return token
+            token['is_superuser'] = user.is_superuser
+            token['mobile'] = user.mobile
+            # ...
+            print('/////////')
+            print(token)
+            return token
+        else:
+            response = Response()
+
+            response.data={
+                'message': 'Invalid credential'
+            }
+            return response
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -102,7 +112,7 @@ class GetAllCourses(APIView):
         # teacher = Teacher.objects.filter(id=id)
 
         # print(teacher)
-        courses = Course.objects.all().order_by('-id')[:4]
+        courses = Course.objects.all().order_by('-id')[:8]
         serializer = SingleCourseSerializer(courses,many=True)
         
         return Response (serializer.data)
@@ -133,12 +143,13 @@ class CourseDetails(APIView):
 
         # print(teacher)
         course = Course.objects.filter(pk=id)
+        
         serializer = SingleCourseSerializer(course,many=True)
         
         return Response (serializer.data)
 
 class GetAllChapters(APIView):
-    # permission_classes=[IsAuthenticated]
+    permission_classes=[IsAuthenticated]
 
     def get(self,request,student_id,course_id):
         student =Account.objects.filter(id=student_id).first()
@@ -148,10 +159,7 @@ class GetAllChapters(APIView):
             chapters =Chapter.objects.filter(course=course_id)
             serializer = ChapterSerializer(chapters,many=True)
             return Response(serializer.data)
-        else:
-            chapters =Chapter.objects.filter(course=course_id).order_by('id')[:1]
-            serializer = ChapterSerializer(chapters,many=True)
-            return Response(serializer.data)
+        
 
 class GetUserEntrolledCourses(APIView):
     permission_classes=[IsAuthenticated]
@@ -188,9 +196,23 @@ class PostRating(APIView):
             print(serializer.errors)
             return Response(serializer.errors)
 
-class StudentFavoriteCourse(generics.ListCreateAPIView):
-    queryset=FavoriteCourse.objects.all()
-    serializer_class=FavoriteCourseSerializer
+class StudentFavoriteCourse(APIView):
+    permission_classes=[IsAuthenticated]
+
+    def post(self, request, format=None):
+        print(request.data)
+        serializer = FavoriteCourseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self,request,id):
+        favoriteCourse=FavoriteCourse.objects.filter(student=id)
+        serializer = FavoriteCourseSerializer(favoriteCourse,many=True)
+        return Response(serializer.data)
+
+
 
 class remove_favorite_course(APIView):
     def delete(self,request,student_id,course_id):
@@ -202,3 +224,27 @@ class remove_favorite_course(APIView):
              return Response({'bool':True})
         else:
             return Response({'bool':False})
+
+class AssignmentList(APIView):
+    authentication_classes=[JWTTeacherAuthentication]
+    def post(self, request, format=None):
+        serializer = AssignmentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+
+
+class UserAssignmentList(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request,course_id,user_id):
+        assigment = StudentAssignment.objects.filter(course=course_id,student=user_id)
+        serializer = AssignmentSerializer(assigment,many=True)
+        return Response(serializer.data)
+
+class AllCourseList(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes=[IsAuthenticated]
