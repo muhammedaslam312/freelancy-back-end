@@ -104,9 +104,22 @@ class StudentAssignment(models.Model):
     file=models.FileField(upload_to='assigment/',blank=True)
     detail = models.TextField(null=True)
     add_time=models.DateTimeField(auto_now_add=True)
+    is_submitted=models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f"{self.title}.{self.student}"
+
+class AssignmentAnswer(models.Model):
+    assignment = models.ForeignKey(StudentAssignment,on_delete=models.CASCADE)
+    detail = models.TextField(null=True)
+    file=models.FileField(upload_to='assigmentanswer/',blank=True)
+   
+    
+
+    def __str__(self):
+        return f"{self.assignment}"
+
 
 
 

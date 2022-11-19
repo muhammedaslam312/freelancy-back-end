@@ -27,7 +27,8 @@ from django.core.mail import send_mail
 # Create your views here.
 
 class GetUsersView(APIView):
-    # permission_classes=[IsAdminUser]
+    permission_classes=[IsAdminUser]
+    # authentication_classes=[IsAuthenticated]
 
 
     def get(self,request):
@@ -37,6 +38,7 @@ class GetUsersView(APIView):
 
 class BlockUser(APIView):
     #permission_classes=[IsAdminUser]
+    # authentication_classes=[IsAuthenticated]
     
     print("aaaa")
     def patch(self,request,id):
@@ -56,7 +58,7 @@ class BlockUser(APIView):
             return Response(serializer.errors)    
 
 class UnblockUser(APIView):
-    # permission_classes=[IsAdminUser]
+    permission_classes=[IsAdminUser]
     
     def patch(self,request,id):
         details = Account.objects.get(id=id)
@@ -74,7 +76,8 @@ class UnblockUser(APIView):
 
 
 class GetTeachersView(APIView):
-    # permission_classes=[IsAdminUser]
+    #authentication_classes=[IsAuthenticated]
+    permission_classes=[IsAdminUser]
 
 
     def get(self,request):
@@ -116,11 +119,12 @@ class VerifyTeacher(APIView):
 
 class CourseCategoryDetail(generics.ListCreateAPIView):
     
-    # permission_classes = [IsAuthenticated]
+    permission_classes=[IsAdminUser]
     queryset = CourseCategory.objects.all()
     serializer_class = CorseCategorySerializer
     
-  
+
+
 
 
 

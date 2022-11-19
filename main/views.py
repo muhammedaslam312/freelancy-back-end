@@ -7,7 +7,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from teacher_app.models import Course,Chapter
 from teacher_app.serializers import ChapterSerializer
 
-from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer,AssignmentSerializer,CourseSerializer
+from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer,AssignmentSerializer,CourseSerializer,GetFavoriteCourseSerializer,AssignmentAnswerSerializer
 
 
 from .models import Account,FavoriteCourse,StudentAssignment
@@ -172,9 +172,20 @@ class GetUserEntrolledCourses(APIView):
         #     if entrollment:
         #         serializer = EntrollmentSerializer(entrollment,many=True)
         #         serializer_list.append(serializer.data)
-        entrollment =StudentEntrollment.objects.filter(student=id)
+        entrollment =StudentEntrollment.objects.filter(student=id,isPaid=True)
         serializer = EntrolledCourseSerializer(entrollment,many=True)
         return Response(serializer.data)
+    
+    
+    def delete(self, request, pk):
+        entrollCourse = StudentEntrollment.objects.get(id=pk)
+        entrollCourse.delete()
+        response={'message':"chapter deleted"}
+        return Response(response,status=status.HTTP_204_NO_CONTENT) 
+    
+
+    
+
 
 class PostRating(APIView):
     permission_classes=[IsAuthenticated]
@@ -209,7 +220,7 @@ class StudentFavoriteCourse(APIView):
 
     def get(self,request,id):
         favoriteCourse=FavoriteCourse.objects.filter(student=id)
-        serializer = FavoriteCourseSerializer(favoriteCourse,many=True)
+        serializer = GetFavoriteCourseSerializer(favoriteCourse,many=True)
         return Response(serializer.data)
 
 
@@ -234,6 +245,10 @@ class AssignmentList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def get(self,request,course_id,user_id):
+        assigment = StudentAssignment.objects.filter(course=course_id,student=user_id)
+        serializer = AssignmentSerializer(assigment,many=True)
+        return Response(serializer.data)
     
 
 
@@ -248,3 +263,17 @@ class AllCourseList(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     permission_classes=[IsAuthenticated]
+
+class AssignmentAnwserList(APIView):
+    permission_classes=[IsAuthenticated]
+    def post(self, request, format=None):
+        print(request.data)
+        serializer = AssignmentAnswerSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            assigment=StudentAssignment.objects.get(id=request.data['assignment'])
+            assigment.is_submitted=True
+            assigment.save()
+        
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

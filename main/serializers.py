@@ -67,24 +67,34 @@ class CourseRatingSerializer(serializers.ModelSerializer):
 class EntrolledCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentEntrollment
-        fields=['course','student','order_amount','get_chapters']
-        depth = 1
+        fields=['id','course','student','order_amount','get_chapters']
+        depth = 2
 
 class FavoriteCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.FavoriteCourse
         fields='__all__'
-        depth = 1
+
+class GetFavoriteCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FavoriteCourse
+        fields='__all__'  
+        depth = 1     
         
 class AssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.StudentAssignment
         fields = '__all__'
-        depth = 1
+        
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
+        fields = '__all__'
+
+class AssignmentAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AssignmentAnswer
         fields = '__all__'
         
 

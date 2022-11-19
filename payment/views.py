@@ -44,7 +44,7 @@ def start_payment(request):
     payment = client.order.create({"amount": int(amount) * 100, 
                                    "currency": "INR", 
                                    "payment_capture": "1"})
-
+    print(payment)
     # we are saving an order with isPaid=False because we've just initialized the order
     # we haven't received the money we will handle the payment succes in next 
     # function

@@ -21,6 +21,7 @@ urlpatterns = [
 
     #dashboard
     path('get_entrolled/<int:id>/',views.GetUserEntrolledCourses.as_view()),
+    path('delete_entroll/<int:pk>/',views.GetUserEntrolledCourses.as_view()),
     path('add_favorite/',views.StudentFavoriteCourse.as_view()),
     path('get_favorite/<int:id>/',views.StudentFavoriteCourse.as_view()),
     path('remove_favorite/<int:student_id>/<int:course_id>',views.remove_favorite_course.as_view()),
@@ -29,6 +30,7 @@ urlpatterns = [
     path('add_assignment/',views.AssignmentList.as_view()),
     path('assignment/<int:course_id>/<int:user_id>/',views.AssignmentList.as_view()),
     path('user/assignment/<int:course_id>/<int:user_id>/',views.UserAssignmentList.as_view()),
+    path('add_answer/',views.AssignmentAnwserList.as_view()),
    
     
     ]
