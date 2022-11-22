@@ -11,7 +11,7 @@ from rest_framework import status
 
 import datetime
 
-from .serializers import ChapterSerializer, CorseCategorySerializer, CourseSerializer, TeacherSerializer,EntrollmentSerializer,TeacherDashboardSerializer
+from .serializers import ChapterSerializer, CorseCategorySerializer, CourseSerializer, TeacherSerializer,EntrollmentSerializer,TeacherDashboardSerializer,EntrollSeializer
 
 from .models import Chapter, Teacher, TeacherToken,CourseCategory,Course
 from rest_framework import generics,permissions
@@ -184,6 +184,7 @@ class GetTeacherDashboard(APIView):
         total_courses=Course.objects.filter(teacher=id).count()
         total_chapters=Chapter.objects.filter(course__teacher=id).count()
         total_students=StudentEntrollment.objects.filter(course__teacher=id).count()
+        
         data = {
             'total_courses':total_courses,
             'total_chapters':total_chapters,
@@ -191,3 +192,15 @@ class GetTeacherDashboard(APIView):
         }
         return Response(data)
 
+class GetTransactionDetails(APIView):
+    authentication_classes=[JWTTeacherAuthentication]
+      
+    def get(self,request,id):
+        print("//////")
+        
+        teacher = Teacher.objects.get(pk=id)
+        student_entroll = StudentEntrollment.objects.filter(course__teacher=teacher)
+        serializer = EntrollSeializer(student_entroll,many=True)
+        # total_price = StudentEntrollment.objects.aggregate(Sum('order_amount'))
+        # print(total_price)
+        return Response (serializer.data)

@@ -16,8 +16,7 @@ urlpatterns = [
     path('recomented_courses/<int:id>/',views.RecomentedCourses.as_view()),
     path('course_details/<int:id>/',views.CourseDetails.as_view()),
     path('user/get_chapters/<int:student_id>/<int:course_id>',views.GetAllChapters.as_view()),
-    
-    path('all_course/',views.PostRating.as_view()),
+    path('user/courserating/',views.PostRating.as_view()),
 
     #dashboard
     path('get_entrolled/<int:id>/',views.GetUserEntrolledCourses.as_view()),
@@ -26,13 +25,18 @@ urlpatterns = [
     path('get_favorite/<int:id>/',views.StudentFavoriteCourse.as_view()),
     path('remove_favorite/<int:student_id>/<int:course_id>',views.remove_favorite_course.as_view()),
     
-    #assignment
+    #assignment teacher
     path('add_assignment/',views.AssignmentList.as_view()),
     path('assignment/<int:course_id>/<int:user_id>/',views.AssignmentList.as_view()),
+    path('assignment/answer/<int:course_id>/<int:user_id>/',views.AssignmentAnswerList.as_view()),
+    #assignment user
     path('user/assignment/<int:course_id>/<int:user_id>/',views.UserAssignmentList.as_view()),
-    path('add_answer/',views.AssignmentAnwserList.as_view()),
-   
-    
+    path('assignment/addanswer/',views.AssignmentAnwserList.as_view()),
+    path('assignment/complete/<int:stu_id>/<int:course_id>/',views.PostCompleteStatus.as_view()),
+
+    #cirtificate
+    path('user/completestatus/<int:student_id>/<int:course_id>/',views.CompleteStatus.as_view()),
     ]
+
 
 urlpatterns = format_suffix_patterns(urlpatterns)

@@ -21,6 +21,8 @@ urlpatterns = [
     path('entrolled_student/<int:id>/',views.GetEntrolledStudents.as_view()),
     path('teacher_dashboard/<int:id>/',views.GetTeacherDashboard.as_view()),
 
+    path('teacher/getentrolled/<int:id>/',views.GetTransactionDetails.as_view(),name='teachergetentroll'),
+
     
 
 

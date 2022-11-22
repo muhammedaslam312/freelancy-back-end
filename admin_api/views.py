@@ -1,8 +1,4 @@
-from functools import partial
-import imp
-from msilib.schema import Class
-from re import U
-from django.shortcuts import render
+
 from rest_framework.views import APIView
 
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
@@ -10,15 +6,21 @@ from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 
 from main.models import Account
 from main.serializers import AccountSerializer
-from .serializer import UpdateTeacherSerializer, UpdateUserSerializer
+from .serializer import UpdateTeacherSerializer, UpdateUserSerializer,CourseSerializer,StudentEntrollmentSerializer,CaroselSerializer,EntrollSeializer
+from payment.models import StudentEntrollment
+from .models import Carosel
 
 from rest_framework.response import Response
 
-from teacher_app.models import CourseCategory, Teacher
+from teacher_app.models import CourseCategory, Teacher,Course
 from teacher_app.serializers import CorseCategorySerializer, TeacherSerializer
 from rest_framework import generics
 
+from rest_framework import status
 from django.core.mail import send_mail
+from rest_framework import permissions
+
+from django.db.models import Avg, Count, Min, Sum
 
 
 
@@ -122,7 +124,93 @@ class CourseCategoryDetail(generics.ListCreateAPIView):
     permission_classes=[IsAdminUser]
     queryset = CourseCategory.objects.all()
     serializer_class = CorseCategorySerializer
+
+class CourseCategoryDelete(APIView):
+    permission_classes=[IsAdminUser]
+    def delete(self, request, pk):
+        category = CourseCategory.objects.get(id=pk)
+        category.delete()
+        response={'message':"category deleted"}
+        return Response(response,status=status.HTTP_204_NO_CONTENT) 
     
+class GetAllCourses(generics.ListAPIView):
+    
+    permission_classes=[IsAdminUser]
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+class GetEntrolledDetails(generics.ListAPIView):
+    
+    permission_classes=[IsAdminUser]
+    queryset = StudentEntrollment.objects.all()
+    serializer_class = StudentEntrollmentSerializer
+
+class AddCarosel(APIView):
+    # authentication_classes=[IsAuthenticated]
+    permission_classes=[IsAdminUser]
+    
+    
+    def post(self,request):
+        try:
+            serializer = CaroselSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                print(serializer.errors)
+                return Response(serializer.errors)
+        except:
+            message = {'detail':'somthing whent worng'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        carosel = Carosel.objects.get(id=pk)
+        carosel.delete()
+        response={'message':"carosel deleted"}
+        return Response(response,status=status.HTTP_204_NO_CONTENT) 
+    
+    def patch(self, request,id):
+        try:
+
+            details = Carosel.objects.get(id=id)
+            serializer = CaroselSerializer(details,data=request.data,partial = True)
+            if serializer.is_valid():
+                print(serializer.validated_data)
+                serializer.save()
+                print("Update Carosel successfully updated")
+                return Response(serializer.data)
+            else:
+                print("Update Carosel failed")
+                print(serializer.errors)
+                return Response(serializer.errors)
+        except:
+            message = {'detail':'somthing whent worng'}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+class GetAllCarosel(APIView):
+    # authentication_classes=[IsAuthenticated]
+
+    def get(self,request):
+        print("//////")
+        
+        courses = Carosel.objects.all()
+        serializer = CaroselSerializer(courses,many=True)
+        
+        return Response (serializer.data)
+
+class GetEntrolledDetails(APIView):
+    permission_classes=[IsAdminUser]
+      
+    def get(self,request):
+        print("//////")
+        
+        student_entroll = StudentEntrollment.objects.all()
+        serializer = EntrollSeializer(student_entroll,many=True)
+        # total_price = StudentEntrollment.objects.aggregate(Sum('order_amount'))
+        # print(total_price)
+        return Response (serializer.data)
+
+
 
 
 

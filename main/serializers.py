@@ -97,5 +97,8 @@ class AssignmentAnswerSerializer(serializers.ModelSerializer):
         model = models.AssignmentAnswer
         fields = '__all__'
         
-
-    
+class AssignmentAnswerTeacherSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(source='assignment.title')
+    class Meta:
+        model = models.AssignmentAnswer
+        fields = ('title','detail','file')

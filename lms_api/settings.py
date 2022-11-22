@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'teacher_app',
     'admin_api',
-    'payment'
+    'payment',
+    'cirtificate'
 ]
 
 # REST_FRAMEWORK = {

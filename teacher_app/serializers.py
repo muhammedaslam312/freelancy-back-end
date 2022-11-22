@@ -60,3 +60,12 @@ class TeacherDashboardSerializer(serializers.ModelSerializer):
         model = Teacher
         fields=['total_courses','total_chapters','total_students']
 
+class EntrollSeializer(serializers.ModelSerializer):
+    student = serializers.CharField(source='student.email')
+    course = serializers.CharField(source='course.title')
+    
+    
+    
+    class Meta:
+        model = StudentEntrollment
+        fields = ('id', 'student', 'course','order_amount','admin_commition')

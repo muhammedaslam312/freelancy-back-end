@@ -25,4 +25,5 @@ urlpatterns = [
     path('api/',include('admin_api.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include("payment.urls")),
+     path('api/', include("cirtificate.urls")),
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

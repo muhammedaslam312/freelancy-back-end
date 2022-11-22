@@ -7,10 +7,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from teacher_app.models import Course,Chapter
 from teacher_app.serializers import ChapterSerializer
 
-from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer,AssignmentSerializer,CourseSerializer,GetFavoriteCourseSerializer,AssignmentAnswerSerializer
+from .serializers import AccountSerializer,VerifyOtpSerializer,SingleCourseSerializer,CourseRatingSerializer,RecomentedCourseSerializer,EntrolledCourseSerializer,FavoriteCourseSerializer,AssignmentSerializer,CourseSerializer,GetFavoriteCourseSerializer,AssignmentAnswerSerializer,AssignmentAnswerTeacherSerializer
 
 
-from .models import Account,FavoriteCourse,StudentAssignment
+from .models import Account,FavoriteCourse,StudentAssignment,AssignmentAnswer
 from rest_framework.response import Response
 from django.http import Http404
 from rest_framework import status
@@ -39,6 +39,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             token['email'] = user.email
         
             token['is_superuser'] = user.is_superuser
+            token['is_staff'] = user.is_staff
             token['mobile'] = user.mobile
             # ...
             print('/////////')
@@ -250,6 +251,12 @@ class AssignmentList(APIView):
         serializer = AssignmentSerializer(assigment,many=True)
         return Response(serializer.data)
     
+class AssignmentAnswerList(APIView):
+    authentication_classes=[JWTTeacherAuthentication]
+    def get(self,request,course_id,user_id):
+        assigment = AssignmentAnswer.objects.filter(assignment__course=course_id,assignment__student=user_id)
+        serializer = AssignmentAnswerTeacherSerializer(assigment,many=True)
+        return Response(serializer.data)
 
 
 class UserAssignmentList(APIView):
@@ -277,3 +284,38 @@ class AssignmentAnwserList(APIView):
         
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostCompleteStatus(APIView):
+
+    def patch(self, request,stu_id,course_id):
+        
+        data = request.data
+        
+        student = Account.objects.get(pk=stu_id)
+        course = Course.objects.get(pk=course_id)
+        assigmets = StudentAssignment.objects.filter(student=student,course=course)
+        submitted_assigment =StudentAssignment.objects.filter(student=student,course=course,is_submitted=True)
+        if len(assigmets) == len(submitted_assigment):
+            entroll_course = StudentEntrollment.objects.get(course=course,student=student)
+            
+            print('8888888')
+            print(entroll_course)
+            entroll_course.is_completed = True
+            entroll_course.save()
+            return Response({'is_completed':True})
+        else:
+            return Response({'is_completed':False})
+
+class CompleteStatus(APIView):
+    def get(self,request,student_id,course_id):
+        student=Account.objects.filter(id=student_id).first()
+        course=Course.objects.filter(id=course_id).first()
+        completeStatus = StudentEntrollment.objects.filter(student=student,course=course,is_completed=True)
+        assigmets = StudentAssignment.objects.filter(student=student,course=course).count()
+
+        
+        if completeStatus:
+             return Response({'bool':True,'assigmets':assigmets})
+        else:
+            return Response({'bool':False,'assigmets':assigmets})
+                

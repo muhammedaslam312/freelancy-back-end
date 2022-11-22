@@ -12,6 +12,7 @@ class StudentEntrollment(models.Model):
     student = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='entrolled_student')
     order_date  =models.DateTimeField(auto_now=True)
     isPaid = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.order_payment_id
@@ -19,3 +20,7 @@ class StudentEntrollment(models.Model):
     def get_chapters(self):
         get_chapters=Chapter.objects.filter(id=self.course_id)
         return serializers.serialize('json',get_chapters)
+
+    def admin_commition(self):
+        commition = int(self.order_amount) * 10/100
+        return commition
