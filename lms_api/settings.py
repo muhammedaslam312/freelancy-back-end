@@ -112,10 +112,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'lms', 
-        'USER': 'postgres',
+        'USER': config('USER'),
         'PASSWORD': config('PASSWORD'),
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
+        'HOST': '', 
+        'PORT': '',
     }
 }
 
