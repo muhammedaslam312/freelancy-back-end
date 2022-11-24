@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from .serializer import OrderSerializer,FreeOrderSerialzer
 from rest_framework import status
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
+from django.core.mail import send_mail
 
 
 import json
@@ -129,8 +130,17 @@ def handle_payment_success(request):
     # if payment is successful that means check is None then we will turn isPaid=True
     order = StudentEntrollment.objects.get(order_payment_id=ord_id)
     order.isPaid = True
-    
     order.save()
+    student_name=order.student.username
+    course_name=order.course.title
+    teacher_mail=order.course.teacher.email
+    send_mail('Hello  ',student_name+
+        ' has been Entrolled '+course_name,
+        'icart312@gmail.com'
+        ,[teacher_mail]   
+        )
+    print("email sent")
+
     print('user is',request.user)
     
     
@@ -158,8 +168,23 @@ class FreeEntroll(APIView):
 
     def post(self, request, format=None):
         print(request.data)
+        data=request.data
+        course_id=data['course']
+        course_name=Course.objects.get(id=course_id).title
+        student_name=Account.objects.get(id=data['student']).username
+        print(student_name)
+        print(course_id)
+        teacher_mail=Course.objects.get(id=course_id).teacher.email
+        print(teacher_mail)
         serializer = FreeOrderSerialzer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            send_mail('Hello  ',student_name+
+            ' has been Entrolled '+course_name,
+            'icart312@gmail.com'
+            ,[teacher_mail]   
+            )
+            print("email sent")
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
