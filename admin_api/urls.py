@@ -20,9 +20,11 @@ urlpatterns = [
         path('getallcourse/',views.GetAllCourses.as_view()),
         path('getentrolled/',views.GetEntrolledDetails.as_view(),name='admingetentroll'),
 
-         path('allcarosel/',views.GetAllCarosel.as_view(),name='addcarosel'),
+        path('allcarosel/',views.GetAllCarosel.as_view(),name='addcarosel'),
         path('addcarosel/',views.AddCarosel.as_view(),name='addcarosel'),
         path('deletecarosel/<int:pk>/',views.AddCarosel.as_view(),name='deletecarosel'),
+        path('admincommition/',views.AdminCommision.as_view(),name='adminCommition'),
+
         
 
         

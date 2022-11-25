@@ -22,6 +22,7 @@ urlpatterns = [
     path('teacher_dashboard/<int:id>/',views.GetTeacherDashboard.as_view()),
 
     path('teacher/getentrolled/<int:id>/',views.GetTransactionDetails.as_view(),name='teachergetentroll'),
+    path('teachercommition/<int:id>/',views.TeacherCommision.as_view()),
 
     
 

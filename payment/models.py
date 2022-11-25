@@ -7,7 +7,7 @@ from teacher_app.models import Chapter
 
 class StudentEntrollment(models.Model):
     course = models.ForeignKey(Course,on_delete=models.CASCADE,related_name='entrolled_courses')
-    order_amount=models.CharField(max_length=25,blank=True)
+    order_amount=models.CharField(max_length=25,blank=True,default='0')
     order_payment_id =models.CharField(max_length=100,blank=True)
     student = models.ForeignKey(Account,on_delete=models.CASCADE,related_name='entrolled_student')
     order_date  =models.DateTimeField(auto_now=True)

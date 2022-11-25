@@ -210,6 +210,31 @@ class GetEntrolledDetails(APIView):
         # print(total_price)
         return Response (serializer.data)
 
+class AdminCommision(APIView):
+    permission_classes=[IsAdminUser]
+
+    def get(self,request):
+        Entrolled_course=StudentEntrollment.objects.all()
+        total_earned=0
+        admin_commision=0
+        for i in Entrolled_course:
+            amount=int(i.order_amount)
+            print('====================')
+            print(amount)
+            print(type(amount))
+            print(type(total_earned),'--------------')
+            total_earned+=amount
+            admin_commision += amount*10/100
+        response={'total_earned':total_earned,'admin_commision':admin_commision}
+        return Response(response) 
+
+       
+
+
+            
+       
+
+
 
 
 
